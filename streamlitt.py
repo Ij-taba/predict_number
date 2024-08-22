@@ -2,36 +2,33 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 
-
 # Define a simple model architecture
 class SimpleModel:
     def __init__(self):
-        # Initialize model layers (example: one hidden layer)
-        self.weights = {
-            'layer1': np.random.rand(28 * 28, 128),  # Example weight for layer 1
-            'layer2': np.random.rand(128, 10)  # Example weight for layer 2
-        }
+        # Initialize model layers
+        self.weights = {}
 
     def predict(self, x):
         # Simple forward pass (without activation functions)
-        x = np.dot(x, self.weights['layer1'])
-        x = np.dot(x, self.weights['layer2'])
+        if 'weights1' not in self.weights or 'weights2' not in self.weights:
+            raise ValueError("Weights not properly initialized")
+        x = np.dot(x, self.weights['weights1'])
+        x = np.dot(x, self.weights['weights2'])
         return x
 
     def set_weights(self, weights):
         # Set the model's weights from loaded weights
         self.weights = weights
 
-
 # Create the model architecture
 model = SimpleModel()
 
 # Load the saved weights from .npz
-weights_path = "model_weights.npz"
+weights_path = "models_weights.npz"
 weights_dict = np.load(weights_path)
 
 # Convert loaded weights to a dictionary format
-weights = {key: weights_dict[key] for key in weights_dict}
+weights = {key: weights_dict[key] for key in weights_dict.files}
 
 # Set the model weights
 model.set_weights(weights)
@@ -61,9 +58,12 @@ if upload_file is not None:
     image_array = image_array / 255  # Normalize
 
     # Predict using the model with loaded weights
-    pr = model.predict(image_array)
-    pr = np.argmax(pr)
-    st.write(f"Number is: {pr}")
+    try:
+        pr = model.predict(image_array)
+        pr = np.argmax(pr)
+        st.write(f"Number is: {pr}")
+    except ValueError as e:
+        st.write(f"Error: {e}")
 
 else:
     st.write("Please upload an image file to display.")
