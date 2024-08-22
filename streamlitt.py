@@ -39,9 +39,8 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-import cv2
 import joblib  # For loading scikit-learn models
-
+import cv2
 # Define the model path and load the model
 model_path = "handwritten_number_model.pkl"
 model = joblib.load(model_path)
