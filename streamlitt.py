@@ -1,14 +1,12 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-import pickle  # For loading scikit-learn models
 
 # Define the model path and load the model
 model_path = "age1_prediction_model.h5"
 
-# Load the model using pickle
-with open(model_path, 'rb') as file:
-    model = pickle.load(file)
+# Load the model using numpy (if the model is saved as a numpy array)
+model = np.load(model_path, allow_pickle=True)
 
 # Streamlit UI
 st.markdown(
@@ -25,7 +23,7 @@ if upload_file is not None:
     image = Image.open(upload_file)
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Convert to grayscale and resize
+    # Convert to grayscale and resize using Pillow
     image = image.convert('L')  # Convert to grayscale
     image = image.resize((28, 28))  # Resize to 28x28
 
@@ -34,7 +32,7 @@ if upload_file is not None:
     image_array = image_array.reshape(1, 28, 28, 1)  # Reshape for model input
     image_array = image_array / 255  # Normalize
 
-    # Predict
+    # Predict (Assuming model is a simple classifier in numpy array form)
     pr = model.predict(image_array)
     pr = np.argmax(pr)
     st.write(f"Number is: {pr}")
