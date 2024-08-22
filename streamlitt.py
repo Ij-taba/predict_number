@@ -4,7 +4,7 @@ import numpy as np
 import pickle  # For loading scikit-learn models
 
 # Define the model path and load the model
-model_path = "handwritten_number_model.pkl"
+model_path = "age1_prediction_model.h5"
 
 # Load the model using pickle
 with open(model_path, 'rb') as file:
