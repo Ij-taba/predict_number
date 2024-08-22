@@ -2,11 +2,39 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 
-# Define the model path and load the model
-model_path = "age1_prediction_model.h5"
 
-# Load the model using numpy (if the model is saved as a numpy array)
-model = np.load(model_path, allow_pickle=True)
+# Define a simple model architecture
+class SimpleModel:
+    def __init__(self):
+        # Initialize model layers (example: one hidden layer)
+        self.weights = {
+            'layer1': np.random.rand(28 * 28, 128),  # Example weight for layer 1
+            'layer2': np.random.rand(128, 10)  # Example weight for layer 2
+        }
+
+    def predict(self, x):
+        # Simple forward pass (without activation functions)
+        x = np.dot(x, self.weights['layer1'])
+        x = np.dot(x, self.weights['layer2'])
+        return x
+
+    def set_weights(self, weights):
+        # Set the model's weights from loaded weights
+        self.weights = weights
+
+
+# Create the model architecture
+model = SimpleModel()
+
+# Load the saved weights from .npz
+weights_path = "model_weights.npz"
+weights_dict = np.load(weights_path)
+
+# Convert loaded weights to a dictionary format
+weights = {key: weights_dict[key] for key in weights_dict}
+
+# Set the model weights
+model.set_weights(weights)
 
 # Streamlit UI
 st.markdown(
@@ -29,10 +57,10 @@ if upload_file is not None:
 
     # Convert to numpy array and normalize
     image_array = np.asarray(image)
-    image_array = image_array.reshape(1, 28, 28, 1)  # Reshape for model input
+    image_array = image_array.reshape(1, 28 * 28)  # Flatten for simple model
     image_array = image_array / 255  # Normalize
 
-    # Predict (Assuming model is a simple classifier in numpy array form)
+    # Predict using the model with loaded weights
     pr = model.predict(image_array)
     pr = np.argmax(pr)
     st.write(f"Number is: {pr}")
